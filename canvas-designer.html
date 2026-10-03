@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مصمم الوصفة والفاتورة — نسخة تجريبية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f2a33;--muted:#6b7782;--line:#d9e0e6;--brand:#1f6f8b;--brand2:#e8f3f7;--danger:#c0392b;--bg:#e9edf1}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:14px/1.5 "Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink);background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 10px;min-height:32px;white-space:nowrap}
+button:hover{background:#f2f5f7}
+button.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+button.primary:hover{background:#185a71}
+button.danger{color:var(--danger)}
+button:disabled{opacity:.4;cursor:default}
+button.on{background:var(--brand2);border-color:var(--brand);color:var(--brand);font-weight:600}
+input,select,textarea{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:#fff;min-width:0}
+textarea{width:100%;resize:vertical}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.muted{color:var(--muted);font-size:12px}
+
+header.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line)}
+header.top h1{font-size:15px;margin:0 0 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;min-height:30px}
+.seg button+button{border-inline-start:1px solid var(--line)}
+.sep{width:1px;height:26px;background:var(--line)}
+.grow{flex:1}
+
+main{flex:1;display:grid;grid-template-columns:220px minmax(0,1fr) 290px;min-height:0}
+aside{background:#fff;overflow:auto;min-height:0}
+#palette{border-inline-end:1px solid var(--line);padding:8px 10px 20px}
+#props{border-inline-start:1px solid var(--line);padding:12px 14px 30px}
+.group h3{font-size:12px;color:var(--muted);margin:14px 2px 6px;font-weight:700}
+.pal-item{display:flex;align-items:center;gap:8px;width:100%;text-align:start;margin-bottom:4px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:grab;user-select:none;min-height:30px}
+.pal-item:hover{border-color:var(--brand);background:var(--brand2)}
+.pal-item .ic{width:20px;text-align:center;color:var(--brand);font-weight:700}
+.pal-item .used{margin-inline-start:auto;color:#2e8b57;font-size:12px}
+#palette.disabled{opacity:.45;pointer-events:none}
+
+#stage{position:relative;overflow:auto;min-height:0;display:flex;padding:30px;direction:ltr}
+#sizer{margin:auto;position:relative;flex:none}
+#paper{position:absolute;top:0;left:0;background:#fff;box-shadow:0 4px 20px rgba(20,40,60,.18);transform-origin:0 0;overflow:hidden;color:#1f2a33;direction:rtl}
+html[lang="fr"] #paper{direction:ltr}
+.design .el{outline:1px dashed rgba(31,111,139,.35);cursor:move}
+.design .el:hover{outline-color:var(--brand)}
+.design .el.sel{outline:1.5px solid var(--brand)}
+.design .el.locked{cursor:not-allowed}
+.grid-bg{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(0,0,0,.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.045) 1px,transparent 1px);background-size:5mm 5mm}
+.margin-guide{position:absolute;border:1px dashed rgba(192,57,43,.35);pointer-events:none}
+.el{position:absolute;overflow:hidden}
+.el .content{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;overflow-wrap:anywhere}
+.el.overflow{outline:1.5px dashed var(--danger)!important}
+.el.overflow::after{content:"⚠";position:absolute;top:0;left:0;background:var(--danger);color:#fff;font:700 8pt Tahoma,sans-serif;padding:.3mm 1mm;border-radius:0 0 1mm 0;z-index:5}
+html[lang="fr"] .el.overflow::after{left:auto;right:0;border-radius:0 0 0 1mm}
+.ph{background:rgba(31,111,139,.1);color:#1f6f8b;border-radius:2px;padding:0 1mm}
+.img-ph{width:100%;height:100%;border:1px dashed #9fb3c0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7a8a96;font-size:8pt;text-align:center;background:#f7fafb}
+.img-ph small{font-size:6pt}
+.preview .img-ph{visibility:hidden}
+.preview .stamp{visibility:hidden}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl th,.tbl td{border:1px solid var(--tb);padding:1.1mm 1.4mm;text-align:start;vertical-align:top}
+.tbl th{font-weight:700}
+.tot{width:100%;border-collapse:collapse}
+.tot td{padding:.9mm 1.5mm;border-bottom:1px solid var(--tb)}
+.tot .num{text-align:left;direction:ltr}
+html[lang="fr"] .tot .num{text-align:right}
+.tot tr.b td{font-weight:700;background:rgba(31,111,139,.07)}
+.txt[contenteditable=true]{outline:1px solid #f0a500;background:#fffbe8;cursor:text;user-select:text}
+.selbox{position:absolute;pointer-events:none;z-index:100000}
+.hdl{position:absolute;width:var(--hs);height:var(--hs);background:#fff;border:calc(var(--hs)/5) solid var(--brand);transform:translate(-50%,-50%);pointer-events:auto;border-radius:1px}
+.h-nw{left:0;top:0;cursor:nwse-resize}.h-n{left:50%;top:0;cursor:ns-resize}.h-ne{left:100%;top:0;cursor:nesw-resize}.h-e{left:100%;top:50%;cursor:ew-resize}
+.h-se{left:100%;top:100%;cursor:nwse-resize}.h-s{left:50%;top:100%;cursor:ns-resize}.h-sw{left:0;top:100%;cursor:nesw-resize}.h-w{left:0;top:50%;cursor:ew-resize}
+.selinfo{position:absolute;top:100%;left:0;margin-top:calc(var(--hs) * .8);background:var(--brand);color:#fff;font:calc(11px / var(--z)) Tahoma,sans-serif;padding:0 calc(4px / var(--z));border-radius:calc(3px / var(--z));white-space:nowrap;direction:ltr}
+.guide{position:absolute;background:#e5367a;pointer-events:none;z-index:100001}
+.guide.v{top:0;bottom:0;width:calc(1px / var(--z))}
+.guide.h{left:0;right:0;height:calc(1px / var(--z))}
+
+.ps{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+.ps h4{margin:0 0 8px;font-size:13px}
+.ph-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted)}
+label.f input,label.f select{color:var(--ink);font-size:13px}
+label.f input[type=color]{padding:1px;height:30px;width:100%}
+label.c{display:flex;align-items:center;gap:6px;font-size:13px;margin:4px 0}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.btns button{font-size:12px;min-height:28px;padding:2px 8px}
+.tips{padding-inline-start:18px;margin:6px 0;font-size:12.5px;color:#3d4a55}
+.tips li{margin-bottom:4px}
+kbd{background:#f1f3f5;border:1px solid #cfd6dc;border-radius:3px;padding:0 4px;font-size:11px}
+
+footer{display:flex;gap:16px;align-items:center;padding:5px 12px;background:#fff;border-top:1px solid var(--line);font-size:12px;color:var(--muted);flex-wrap:wrap}
+#st-warn{color:var(--danger);font-weight:600}
+#st-msg{color:var(--brand);font-weight:600}
+
+@media(max-width:1000px){main{grid-template-columns:180px minmax(0,1fr) 240px}}
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff;display:block}
+  header.top,#palette,#props,footer{display:none!important}
+  main{display:block}
+  #stage{padding:0;overflow:visible;display:block}
+  #sizer{width:auto!important;height:auto!important;margin:0}
+  #paper{position:relative;transform:none!important;box-shadow:none}
+  .el.overflow{outline:none!important}.el.overflow::after{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<style id="pageSize">@page{size:A5 portrait;margin:0}</style>
+</head>
+<body>
+
+<header class="top">
+  <h1 id="ui-title">🦷 مصمم المستندات</h1>
+  <div class="seg" id="langSeg">
+    <button data-lang="ar" class="on">عربي</button>
+    <button data-lang="fr">Français</button>
+  </div>
+  <div class="sep"></div>
+  <div class="seg" id="docSeg">
+    <button data-doc="rx" id="ui-docRx">الوصفة الطبية</button>
+    <button data-doc="invoice" id="ui-docInv">الفاتورة</button>
+  </div>
+  <div class="seg" id="paperSeg">
+    <button data-paper="A5">A5</button>
+    <button data-paper="A4">A4</button>
+  </div>
+  <div class="sep"></div>
+  <div class="seg" id="modeSeg">
+    <button data-mode="design" id="ui-modeDes">✎ تصميم</button>
+    <button data-mode="preview" id="ui-modePre">👁 معاينة</button>
+  </div>
+  <select id="sample">
+    <option value="short" id="ui-sShort">بيانات قصيرة</option>
+    <option value="long" id="ui-sLong">بيانات طويلة (اختبار)</option>
+  </select>
+  <div class="sep"></div>
+  <button id="undo" title="تراجع">↶</button>
+  <button id="redo" title="إعادة">↷</button>
+  <button id="gridBtn">▦ شبكة</button>
+  <button id="snapBtn">🧲 محاذاة</button>
+  <div class="sep"></div>
+  <button id="zoomOut">−</button>
+  <span id="zoomVal" style="min-width:44px;text-align:center">100%</span>
+  <button id="zoomIn">+</button>
+  <button id="zoomFit">ملاءمة</button>
+  <div class="grow"></div>
+  <button id="exportBtn">⤓ تصدير</button>
+  <button id="importBtn">⤒ استيراد</button>
+  <button id="printBtn" class="primary">🖨 طباعة تجريبية</button>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+  <input type="file" id="imgFile" accept="image/*" hidden>
+</header>
+
+<main>
+  <aside id="palette" aria-label="العناصر"></aside>
+  <section id="stage" aria-label="مساحة التصميم">
+    <div id="sizer"><div id="paper"></div></div>
+  </section>
+  <aside id="props" aria-label="الخصائص"></aside>
+</main>
+
+<footer>
+  <span id="st-info"></span>
+  <span id="st-pos"></span>
+  <span id="st-warn"></span>
+  <span id="st-msg"></span>
+  <span class="grow"></span>
+  <span id="ui-auto">يُحفظ تلقائياً في هذا المتصفح</span>
+</footer>
+
+<script>
+'use strict';
+/* ===================== Constants ===================== */
+const PX = 96 / 25.4;               
+const SAFE = 6;                     
+const PAPERS = { A4: { w: 210, h: 297 }, A5: { w: 148, h: 210 } };
+const STORE = 'clinic-doc-designer-v2';
+const FONTS = { Cairo: '"Cairo",Tahoma,sans-serif', Tajawal: '"Tajawal",Tahoma,sans-serif', Tahoma: 'Tahoma,Arial,sans-serif', 'Segoe UI': '"Segoe UI",Tahoma,sans-serif', Times: '"Times New Roman",serif' };
+
+const I18N = {
+  ar: {
+    appTitle: "🦷 مصمم المستندات", docRx: "الوصفة الطبية", docInv: "الفاتورة", modeDes: "✎ تصميم", modePre: "👁 معاينة",
+    sShort: "بيانات قصيرة", sLong: "بيانات طويلة (اختبار)", grid: "▦ شبكة", snap: "🧲 محاذاة", fit: "ملاءمة", exp: "⤓ تصدير", imp: "⤒ استيراد", print: "🖨 طباعة تجريبية", auto: "يُحفظ تلقائياً في هذا المتصفح",
+    lang: "اللغة",
+    cName: 'عيادة الابتسامة لطب الأسنان', drName: 'د. سامر الحلبي', spec: 'طب وجراحة الفم والأسنان', cAddr: 'دمشق — المزة، شارع الجلاء',
+    cPhone: '+963 11 612 3456', lic: 'ترخيص رقم 4521', wh: 'السبت – الخميس، 10 ص – 6 م', pName: 'أحمد محمود', pAge: '34 سنة', pGen: 'ذكر', rxNote: 'تجنّب الأطعمة الساخنة والباردة لمدة 48 ساعة.',
+    diag: 'التهاب لب حاد – السن 36', pMeth: 'نقداً', pStat: 'مدفوع جزئياً', invNote: 'شكراً لثقتكم — نتمنى لكم دوام الصحة',
+    m1: 'كبسولة', m1f: '3 مرات يومياً', m1d: '7 أيام', m1n: 'بعد الطعام',
+    m2: 'حبة', m2f: 'عند اللزوم', m2d: '3 أيام', m2n: 'لا تتجاوز 3 يومياً', i1: 'معالجة لبية', i2: 'حشوة كومبوزيت',
+    gClinic: 'بيانات العيادة', gPat: 'بيانات المريض', gRx: 'الوصفة', gInv: 'الفاتورة', gGen: 'عناصر حرة',
+    lblLogo: 'الشعار', lblCName: 'اسم العيادة', lblDr: 'اسم الطبيب', lblSpec: 'الاختصاص', lblCPhone: 'هاتف العيادة', lblCAddr: 'العنوان', lblLic: 'رقم الترخيص', lblWH: 'أوقات الدوام',
+    lblPat: 'اسم المريض', lblPPhone: 'رقم WhatsApp', lblPAge: 'العمر', lblPGen: 'الجنس', lblFile: 'رقم الملف', lblDate: 'التاريخ', lblRxSym: 'رمز ℞', lblDiag: 'التشخيص', lblRxTab: 'جدول الأدوية', lblRxNot: 'تعليمات للمريض', lblNV: 'الزيارة القادمة',
+    lblInvNo: 'رقم الفاتورة', lblInvTab: 'جدول الإجراءات', lblTot: 'المجاميع', lblPay: 'طريقة الدفع', lblPStat: 'حالة الدفع', lblInvNot: 'ملاحظة الفاتورة',
+    lblTitle: 'عنوان', rxTitle: 'وصفة طبية', invTitle: 'فاتورة', lblText: 'نص حر', txtPh: 'نص قابل للتعديل — انقر مرتين', lblHLine: 'خط أفقي', lblVLine: 'خط عمودي', lblRect: 'إطار / خلفية', lblImg: 'صورة', lblSig: 'التوقيع', sigText: 'توقيع الطبيب', lblStamp: 'مكان الختم (لا يُطبع)', stampText: 'ختم العيادة', lblQR: 'رمز QR',
+    rxCols: { i: '#', name: 'الدواء', dose: 'الشكل', freq: 'التكرار', dur: 'المدة', note: 'ملاحظات' },
+    invCols: { i: '#', name: 'الإجراء', tooth: 'السن', qty: 'الكمية', price: 'السعر', total: 'المجموع' },
+    totLbls: ['المجموع', 'الخصم', 'الإجمالي', 'المدفوع', 'المتبقي'],
+    warnOver: '⚠ المحتوى أكبر من المساحة', imgDbl: 'انقر مرتين للرفع', palHint: 'اسحب العنصر إلى الورقة أو انقر عليه لإضافته.',
+    addPos: 'أُضيف: ', curPos: 'المؤشر: ', mm: 'مم', imgUp: 'تم رفع الصورة',
+    pLbl: 'إظهار التسمية قبل القيمة', pLblTxt: 'نص التسمية', pAuto: 'القيمة تُملأ تلقائياً عند الطباعة.', pTxt: 'النص', pTxtHint: 'أو انقر مرتين على النص لتعديله.',
+    pCol: 'أعمدة الجدول', pColNo: 'الرقم #', pHeadBg: 'خلفية الترويسة', pTbc: 'لون الحدود', pTbL: 'لون الخطوط', pImgBtn: '⤒ رفع صورة', pImgDel: 'إزالة', pFit: 'طريقة الملاءمة', pFill: 'تعبئة', pCont: 'احتواء',
+    pPos: 'الموضع والحجم (مم)', pX: 'من اليسار', pY: 'من الأعلى', pW: 'العرض', pH: 'الارتفاع', pARgt: 'محاذاة لليمين', pALft: 'محاذاة لليسار', pCH: 'توسيط أفقي', pCV: 'توسيط عمودي', pFW: 'بعرض الصفحة',
+    pLine: 'الخط', pThick: 'السماكة (px)', pColTxt: 'اللون', pDash: 'خط متقطع',
+    pBox: 'الإطار والخلفية', pNoBg: 'بدون خلفية', pBg: 'الخلفية', pRad: 'تدوير الزوايا', pBw: 'سماكة الإطار (px)', pBc: 'لون الإطار', pPad: 'الحشوة (مم)',
+    pArr: 'الترتيب والإجراءات', pFrt: '⬆ للأمام', pBck: '⬇ للخلف', pLock: '🔒 قفل', pUnl: '🔓 فك', pDup: '⧉ نسخ', pDel: '🗑 حذف',
+    sPap: 'الورق', sPapH: 'عند تغيير المقاس تُعاد مواءمة العناصر تلقائياً.', sGen: 'عام', sFnt: 'الخط', sCur: 'العملة',
+    sTpl: 'القالب', sRes: '↺ استعادة القالب', sClr: 'مسح العناصر', sEls: 'عدد العناصر: ',
+    sHow: 'طريقة الاستخدام', sH1: 'اسحب أي عنصر من القائمة إلى الورقة.', sH2: 'حرّك العنصر وغيّر حجمه.', sH3: 'اضغط Alt لتعطيل المحاذاة مؤقتاً.',
+    pFnt: 'الخط', pSz: 'الحجم', pBld: 'عريض', pIta: 'مائل', pAln: 'المحاذاة', pRgt: 'يمين', pCen: 'وسط', pLft: 'يسار', pVAln: 'عمودي', pTop: 'أعلى', pMid: 'منتصف', pBot: 'أسفل', pLh: 'تباعد الأسطر', pLblCol: 'لون التسمية',
+    overwarn: "⚠ المحتوى أكبر من المساحة", lockedText: "🔒 "
+  },
+  fr: {
+    appTitle: "🦷 Créateur de Documents", docRx: "Ordonnance", docInv: "Facture", modeDes: "✎ Conception", modePre: "👁 Aperçu",
+    sShort: "Données courtes", sLong: "Données longues (Test)", grid: "▦ Grille", snap: "🧲 Aimant", fit: "Ajuster", exp: "⤓ Exporter", imp: "⤒ Importer", print: "🖨 Impression", auto: "Sauvegarde auto locale",
+    lang: "Langue",
+    cName: 'Clinique Sourire', drName: 'Dr. Samer', spec: 'Chirurgie Dentaire', cAddr: 'Damas — Mezzeh',
+    cPhone: '+963 11 612 3456', lic: 'Licence 4521', wh: 'Sam – Jeu, 10h – 18h', pName: 'Ahmed Mahmoud', pAge: '34 ans', pGen: 'Homme', rxNote: 'Éviter aliments chauds/froids 48h.',
+    diag: 'Pulpite aiguë – Dent 36', pMeth: 'Espèces', pStat: 'Partiellement payé', invNote: 'Merci pour votre confiance',
+    m1: 'Gélule', m1f: '3 fois/jour', m1d: '7 jours', m1n: 'Après repas',
+    m2: 'Comprimé', m2f: 'Si besoin', m2d: '3 jours', m2n: 'Max 3/j', i1: 'Endodontie', i2: 'Composite',
+    gClinic: 'Clinique', gPat: 'Patient', gRx: 'Ordonnance', gInv: 'Facture', gGen: 'Général',
+    lblLogo: 'Logo', lblCName: 'Nom Clinique', lblDr: 'Médecin', lblSpec: 'Spécialité', lblCPhone: 'Téléphone', lblCAddr: 'Adresse', lblLic: 'Licence', lblWH: 'Horaires',
+    lblPat: 'Nom Patient', lblPPhone: 'WhatsApp', lblPAge: 'Âge', lblPGen: 'Sexe', lblFile: 'Dossier', lblDate: 'Date', lblRxSym: 'Symbole ℞', lblDiag: 'Diagnostic', lblRxTab: 'Médicaments', lblRxNot: 'Instructions', lblNV: 'Prochain RDV',
+    lblInvNo: 'Facture N°', lblInvTab: 'Procédures', lblTot: 'Totaux', lblPay: 'Paiement', lblPStat: 'Statut', lblInvNot: 'Note',
+    lblTitle: 'Titre', rxTitle: 'Ordonnance', invTitle: 'Facture', lblText: 'Texte libre', txtPh: 'Texte modifiable', lblHLine: 'Ligne H', lblVLine: 'Ligne V', lblRect: 'Rectangle', lblImg: 'Image', lblSig: 'Signature', sigText: 'Signature du médecin', lblStamp: 'Cachet', stampText: 'Cachet clinique', lblQR: 'Code QR',
+    rxCols: { i: '#', name: 'Médicament', dose: 'Forme', freq: 'Fréquence', dur: 'Durée', note: 'Notes' },
+    invCols: { i: '#', name: 'Procédure', tooth: 'Dent', qty: 'Qté', price: 'Prix', total: 'Total' },
+    totLbls: ['Sous-total', 'Remise', 'Total', 'Payé', 'Reste'],
+    warnOver: '⚠ Débordement', imgDbl: 'Double-clic pour upload', palHint: 'Glissez un élément ou cliquez.',
+    addPos: 'Ajouté: ', curPos: 'Curseur: ', mm: 'mm', imgUp: 'Image chargée',
+    pLbl: 'Afficher l\'étiquette', pLblTxt: 'Texte étiquette', pAuto: 'Valeur auto remplie à l\'impression.', pTxt: 'Texte', pTxtHint: 'Double-clic pour éditer.',
+    pCol: 'Colonnes', pColNo: 'Numéro #', pHeadBg: 'Fond En-tête', pTbc: 'Bordures', pTbL: 'Lignes', pImgBtn: '⤒ Charger Image', pImgDel: 'Supprimer', pFit: 'Ajustement', pFill: 'Remplir', pCont: 'Contenir',
+    pPos: 'Position & Taille (mm)', pX: 'Gauche', pY: 'Haut', pW: 'Largeur', pH: 'Hauteur', pARgt: 'Aligner à droite', pALft: 'Aligner à gauche', pCH: 'Centrer H', pCV: 'Centrer V', pFW: 'Pleine largeur',
+    pLine: 'Ligne', pThick: 'Épaisseur', pColTxt: 'Couleur', pDash: 'Pointillés',
+    pBox: 'Fond/Bordure', pNoBg: 'Sans fond', pBg: 'Couleur fond', pRad: 'Arrondi', pBw: 'Bordure (px)', pBc: 'Couleur bordure', pPad: 'Marge (mm)',
+    pArr: 'Disposition', pFrt: '⬆ Premier plan', pBck: '⬇ Arrière-plan', pLock: '🔒 Verrouiller', pUnl: '🔓 Déverrouiller', pDup: '⧉ Dupliquer', pDel: '🗑 Supprimer',
+    sPap: 'Papier', sPapH: 'Ajustement automatique au changement.', sGen: 'Général', sFnt: 'Police', sCur: 'Devise',
+    sTpl: 'Modèle', sRes: '↺ Réinitialiser', sClr: 'Tout effacer', sEls: 'Éléments: ',
+    sHow: 'Utilisation', sH1: 'Glissez ou cliquez sur un élément.', sH2: 'Déplacez et redimensionnez.', sH3: 'Maintenez Alt pour désactiver l\'aimant.',
+    pFnt: 'Police', pSz: 'Taille', pBld: 'Gras', pIta: 'Italique', pAln: 'Alignement', pRgt: 'Droite', pCen: 'Centre', pLft: 'Gauche', pVAln: 'Alignement V', pTop: 'Haut', pMid: 'Milieu', pBot: 'Bas', pLh: 'Hauteur ligne', pLblCol: 'Couleur étiquette',
+    overwarn: "⚠ Débordement", lockedText: "🔒 "
+  }
+};
+let lang = 'ar';
+const L = k => I18N[lang][k];
+
+function getDATA() {
+  return {
+    short: {
+      clinicName: L('cName'), doctorName: L('drName'), specialty: L('spec'),
+      clinicAddress: L('cAddr'), clinicPhone: L('cPhone'), license: L('lic'), workingHours: L('wh'),
+      patientName: L('pName'), patientPhone: '+963 944 123 456', patientAge: L('pAge'), patientGender: L('pGen'), fileNo: 'P-00128', docDate: '03/10/2026',
+      diagnosis: L('diag'), nextVisit: '10/10/2026', rxNotes: L('rxNote'),
+      invoiceNo: 'INV-2026-0042', paymentMethod: L('pMeth'), paidStatus: L('pStat'), invoiceNote: L('invNote'),
+      meds: [
+        { name: 'Amoxicillin 500mg', dose: L('m1'), freq: L('m1f'), dur: L('m1d'), note: L('m1n') },
+        { name: 'Ibuprofen 400mg', dose: L('m2'), freq: L('m2f'), dur: L('m2d'), note: L('m2n') }
+      ],
+      items: [
+        { name: L('i1'), tooth: '36', qty: 1, price: 150 },
+        { name: L('i2'), tooth: '36', qty: 1, price: 60 }
+      ],
+      discount: 10, paid: 100
+    },
+    long: {
+      clinicName: L('cName'), doctorName: L('drName'), specialty: L('spec'),
+      clinicAddress: L('cAddr'), clinicPhone: '+963 11 612 3456 / +963 944 000 111', license: L('lic'), workingHours: L('wh'),
+      patientName: L('pName'), patientPhone: '+963 944 123 456', patientAge: L('pAge'), patientGender: L('pGen'), fileNo: 'P-2026-000128', docDate: '03/10/2026',
+      diagnosis: L('diag'),
+      nextVisit: '10/10/2026 16:30',
+      rxNotes: L('rxNote'),
+      invoiceNo: 'INV-2026-000042', paymentMethod: L('pMeth'), paidStatus: L('pStat'), invoiceNote: L('invNote'),
+      meds: [
+        { name: 'Amoxicillin + Clavulanic acid 1g', dose: L('m2'), freq: L('m1f'), dur: L('m1d'), note: L('m1n') }
+      ],
+      items: [
+        { name: L('i1'), tooth: '—', qty: 1, price: 20 },
+        { name: L('i2'), tooth: '—', qty: 1, price: 35 }
+      ],
+      discount: 40, paid: 500
+    }
+  }
+}
+
+function getCAT() {
+  return {
+    logo:          { g: 'clinic', type: 'logo', label: L('lblLogo'), ic: '◎', w: 24, h: 24 },
+    clinicName:    { g: 'clinic', label: L('lblCName'), ic: 'T', w: 90, h: 10, style: { fs: 15, bold: true } },
+    doctorName:    { g: 'clinic', label: L('lblDr'), ic: 'T', w: 80, h: 7, style: { fs: 11, bold: true } },
+    specialty:     { g: 'clinic', label: L('lblSpec'), ic: 'T', w: 80, h: 6, style: { fs: 9, color: '#5b6670' } },
+    clinicPhone:   { g: 'clinic', label: L('lblCPhone'), ic: '☎', w: 60, h: 6, style: { fs: 9 } },
+    clinicAddress: { g: 'clinic', label: L('lblCAddr'), ic: '⌂', w: 90, h: 6, style: { fs: 9 } },
+    license:       { g: 'clinic', label: L('lblLic'), ic: '#', w: 50, h: 6, style: { fs: 8, color: '#5b6670' } },
+    workingHours:  { g: 'clinic', label: L('lblWH'), ic: '◷', w: 70, h: 6, style: { fs: 8 } },
+    patientName:   { g: 'patient', label: L('lblPat'), ic: '👤', w: 70, h: 7, showLabel: true },
+    patientPhone:  { g: 'patient', label: L('lblPPhone'), ic: '☎', w: 60, h: 7, showLabel: true },
+    patientAge:    { g: 'patient', label: L('lblPAge'), ic: '#', w: 35, h: 7, showLabel: true },
+    patientGender: { g: 'patient', label: L('lblPGen'), ic: '⚥', w: 35, h: 7, showLabel: true },
+    fileNo:        { g: 'patient', label: L('lblFile'), ic: '#', w: 45, h: 7, showLabel: true },
+    docDate:       { g: 'patient', label: L('lblDate'), ic: '▦', w: 45, h: 7, showLabel: true },
+    rxSymbol:      { g: 'rx', type: 'rxSymbol', label: L('lblRxSym'), ic: '℞', w: 16, h: 14, style: { fs: 28, bold: true, color: '#1f6f8b', align: 'center', lh: 1, pad: 0 } },
+    diagnosis:     { g: 'rx', label: L('lblDiag'), ic: '✚', w: 110, h: 7, showLabel: true },
+    rxTable:       { g: 'rx', type: 'rxTable', label: L('lblRxTab'), ic: '☰', w: 120, h: 55, cols: ['i', 'name', 'dose', 'freq', 'dur'], style: { fs: 9, valign: 'start' } },
+    rxNotes:       { g: 'rx', label: L('lblRxNot'), ic: '✎', w: 120, h: 16, showLabel: true, style: { fs: 9, valign: 'start' } },
+    nextVisit:     { g: 'rx', label: L('lblNV'), ic: '▦', w: 60, h: 7, showLabel: true },
+    invoiceNo:     { g: 'invoice', label: L('lblInvNo'), ic: '#', w: 70, h: 7, showLabel: true },
+    invTable:      { g: 'invoice', type: 'invTable', label: L('lblInvTab'), ic: '☰', w: 180, h: 90, cols: ['i', 'name', 'tooth', 'qty', 'price', 'total'], style: { fs: 10, valign: 'start' } },
+    totals:        { g: 'invoice', type: 'totals', label: L('lblTot'), ic: 'Σ', w: 75, h: 38, style: { fs: 10, valign: 'start' } },
+    paymentMethod: { g: 'invoice', label: L('lblPay'), ic: '💳', w: 70, h: 7, showLabel: true },
+    paidStatus:    { g: 'invoice', label: L('lblPStat'), ic: '✓', w: 70, h: 7, showLabel: true },
+    invoiceNote:   { g: 'invoice', label: L('lblInvNot'), ic: '✎', w: 120, h: 7 },
+    title:         { g: 'general', type: 'text', label: L('lblTitle'), ic: 'H', w: 80, h: 11, text: L('rxTitle'), style: { fs: 18, bold: true, align: 'center' } },
+    text:          { g: 'general', type: 'text', label: L('lblText'), ic: '¶', w: 60, h: 10, text: L('txtPh') },
+    hline:         { g: 'general', type: 'hline', label: L('lblHLine'), ic: '—', w: 100, h: 3, style: { bw: 1.5, bc: '#1f6f8b' } },
+    vline:         { g: 'general', type: 'vline', label: L('lblVLine'), ic: '|', w: 3, h: 40, style: { bw: 1.5, bc: '#1f6f8b' } },
+    rect:          { g: 'general', type: 'rect', label: L('lblRect'), ic: '▭', w: 60, h: 30, style: { bw: 1, bc: '#9fb3c0', radius: 2 } },
+    image:         { g: 'general', type: 'image', label: L('lblImg'), ic: '▣', w: 40, h: 30 },
+    signature:     { g: 'general', type: 'signature', label: L('lblSig'), ic: '✍', w: 50, h: 18, text: L('sigText'), style: { fs: 9, align: 'center', valign: 'end' } },
+    stamp:         { g: 'general', type: 'stamp', label: L('lblStamp'), ic: '◯', w: 28, h: 28, text: L('stampText'), style: { fs: 8, align: 'center', color: '#8a96a0' } },
+    qr:            { g: 'general', type: 'qr', label: L('lblQR'), ic: '▩', w: 22, h: 22 }
+  }
+}
+
+const DOC_GROUPS = { rx: ['clinic', 'patient', 'rx', 'general'], invoice: ['clinic', 'patient', 'invoice', 'general'] };
+
+/* ===================== Helpers ===================== */
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 10);
+const clamp = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
+const r1 = v => Math.round(v * 10) / 10;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const BASE = { fs: 10, bold: false, italic: false, color: '#1f2a33', align: 'right', valign: 'center', lh: 1.35,
+  bg: 'transparent', bw: 0, bc: '#1f2a33', radius: 0, pad: 0.8, headBg: '#e8f3f7', tbc: '#cfd8de', lblColor: '#1f2a33', dash: false, fit: 'contain' };
+
+function createEl(key, x = 10, y = 10, dt = 'rx') {
+  const d = getCAT()[key];
+  const el = { id: uid(), key, type: d.type || 'field', x, y, w: d.w, h: d.h, locked: false, style: { ...BASE, ...(d.style || {}) } };
+  if (el.type === 'field') el.showLabel = !!d.showLabel;
+  if (d.text !== undefined) el.text = d.text;
+  if (key === 'title') el.text = dt === 'rx' ? L('rxTitle') : L('invTitle');
+  if (d.cols) el.cols = [...d.cols];
+  return el;
+}
+function mk(dt, key, x, y, w, h, extra = {}) {
+  const el = createEl(key, x, y, dt);
+  el.w = w; el.h = h;
+  if (extra.style) { Object.assign(el.style, extra.style); delete extra.style; }
+  return Object.assign(el, extra);
+}
+
+function tplRx() {
+  const m = (...a) => mk('rx', ...a);
+  return [
+    m('logo', 10, 8, 24, 24), m('clinicName', 38, 8, 100, 10, { style: { color: '#1f6f8b' } }), m('doctorName', 38, 18, 100, 7),
+    m('specialty', 38, 25, 100, 6), m('hline', 10, 33, 128, 2, { style: { bw: 2 } }), m('patientName', 62, 37, 76, 7),
+    m('docDate', 10, 37, 50, 7, { style: { align: 'left' } }), m('patientAge', 62, 44, 76, 7), m('fileNo', 10, 44, 50, 7, { style: { align: 'left' } }),
+    m('diagnosis', 10, 52, 128, 7), m('rxSymbol', 122, 61, 16, 14), m('rxTable', 10, 76, 128, 60),
+    m('rxNotes', 10, 139, 128, 17), m('nextVisit', 78, 160, 60, 7), m('signature', 10, 160, 50, 18),
+    m('hline', 10, 185, 128, 2, { style: { bw: 1, bc: '#9fb3c0' } }), m('clinicAddress', 10, 188, 128, 6, { style: { align: 'center', fs: 8 } }),
+    m('clinicPhone', 10, 194, 128, 6, { style: { align: 'center', fs: 8 } })
+  ];
+}
+function tplInv() {
+  const m = (...a) => mk('invoice', ...a);
+  return [
+    m('logo', 15, 12, 30, 30), m('clinicName', 50, 13, 145, 11, { style: { fs: 18, color: '#1f6f8b' } }), m('doctorName', 50, 24, 145, 8, { style: { fs: 12 } }),
+    m('clinicAddress', 50, 32, 145, 6), m('clinicPhone', 50, 38, 145, 6), m('title', 15, 50, 180, 12, { style: { fs: 20, bg: '#e8f3f7', radius: 2 } }),
+    m('invoiceNo', 110, 68, 85, 7), m('docDate', 15, 68, 85, 7, { style: { align: 'left' } }), m('patientName', 110, 76, 85, 7),
+    m('patientPhone', 15, 76, 85, 7, { style: { align: 'left' } }), m('fileNo', 110, 84, 85, 7), m('invTable', 15, 96, 180, 105),
+    m('totals', 15, 206, 80, 40), m('paymentMethod', 110, 208, 85, 7), m('paidStatus', 110, 216, 85, 14, { style: { valign: 'start' } }),
+    m('stamp', 100, 240, 26, 26), m('signature', 130, 248, 65, 18), m('qr', 15, 252, 22, 22),
+    m('hline', 15, 277, 180, 2, { style: { bw: 1, bc: '#9fb3c0' } }), m('invoiceNote', 15, 280, 180, 7, { style: { align: 'center', fs: 9 } })
+  ];
+}
+function fresh() {
+  return {
+    docType: 'rx', sample: 'short', currency: '$',
+    docs: { rx: { paper: 'A5', font: 'Cairo', els: tplRx() }, invoice: { paper: 'A4', font: 'Cairo', els: tplInv() } }
+  };
+}
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE));
+    if (s && s.docs && s.docs.rx && s.docs.invoice) return s;
+  } catch (e) { }
+  return null;
+}
+
+let S = load() || fresh();
+const ui = { sel: null, preview: false, zoom: 1, grid: true, snap: true, overflow: 0 };
+let undoS = [], redoS = [], lastKey = null, lastT = 0, lastDown = {};
+
+const doc = () => S.docs[S.docType];
+const els = () => doc().els;
+const P = () => PAPERS[doc().paper];
+const D = () => getDATA()[S.sample];
+const getEl = id => els().find(e => e.id === id);
+const selEl = () => (ui.sel ? getEl(ui.sel) : null);
+const money = n => Number(n).toLocaleString('en-US') + ' ' + (S.currency || '');
+
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { msg('Error saving'); }
+}
+function pushUndo(snap) { undoS.push(snap); if (undoS.length > 150) undoS.shift(); redoS.length = 0; }
+function mutate(fn, o = {}) {
+  const now = Date.now();
+  if (!(o.key && o.key === lastKey && now - lastT < 1000)) pushUndo(JSON.stringify(S));
+  lastKey = o.key || null; lastT = now;
+  fn(); save(); render();
+  if (!o.skipProps) renderProps();
+}
+function undo() {
+  if (!undoS.length) return;
+  redoS.push(JSON.stringify(S)); S = JSON.parse(undoS.pop()); lastKey = null;
+  if (!selEl()) ui.sel = null;
+  save(); render(); renderProps();
+}
+function redo() {
+  if (!redoS.length) return;
+  undoS.push(JSON.stringify(S)); S = JSON.parse(redoS.pop()); lastKey = null;
+  if (!selEl()) ui.sel = null;
+  save(); render(); renderProps();
+}
+let msgTimer;
+function msg(t) { $('#st-msg').textContent = t; clearTimeout(msgTimer); msgTimer = setTimeout(() => $('#st-msg').textContent = '', 3000); }
+
+/* ===================== Rendering ===================== */
+const paperEl = $('#paper'), sizer = $('#sizer'), stage = $('#stage');
+
+function render() {
+  const p = P(), z = ui.zoom;
+  sizer.style.width = p.w * PX * z + 'px';
+  sizer.style.height = p.h * PX * z + 'px';
+  paperEl.style.width = p.w + 'mm';
+  paperEl.style.height = p.h + 'mm';
+  paperEl.style.transform = `scale(${z})`;
+  paperEl.style.setProperty('--z', z);
+  paperEl.style.setProperty('--hs', (9 / z) + 'px');
+  paperEl.style.fontFamily = FONTS[doc().font] || FONTS.Cairo;
+  paperEl.className = ui.preview ? 'preview' : 'design';
+
+  let h = '';
+  if (!ui.preview && ui.grid) {
+    h += '<div class="grid-bg"></div>';
+    h += `<div class="margin-guide" style="left:${SAFE}mm;top:${SAFE}mm;right:${SAFE}mm;bottom:${SAFE}mm"></div>`;
+  }
+  els().forEach((e, i) => { h += elHTML(e, i); });
+  const se = selEl();
+  if (!ui.preview && se) h += selboxHTML(se);
+  h += '<div id="guides"></div>';
+  paperEl.innerHTML = h;
+
+  markOverflow();
+  updateToolbar();
+  updateStatus();
+  renderPalette();
+  $('#pageSize').textContent = `@page{size:${doc().paper} portrait;margin:0}`;
+  
+  // UI texts
+  $('#ui-title').textContent = L('appTitle');
+  $('#ui-docRx').textContent = L('docRx');
+  $('#ui-docInv').textContent = L('docInv');
+  $('#ui-modeDes').textContent = L('modeDes');
+  $('#ui-modePre').textContent = L('modePre');
+  $('#ui-sShort').textContent = L('sShort');
+  $('#ui-sLong').textContent = L('sLong');
+  $('#gridBtn').textContent = L('grid');
+  $('#snapBtn').textContent = L('snap');
+  $('#zoomFit').textContent = L('fit');
+  $('#exportBtn').textContent = L('exp');
+  $('#importBtn').textContent = L('imp');
+  $('#printBtn').textContent = L('print');
+  $('#ui-auto').textContent = L('auto');
+}
+
+function elHTML(e, i) {
+  const s = e.style;
+  const line = e.type === 'hline' || e.type === 'vline';
+  const box = `left:${e.x}mm;top:${e.y}mm;width:${e.w}mm;height:${e.h}mm;z-index:${i + 1};`;
+  const deco = line ? '' : `background:${s.bg};border:${s.bw ? s.bw + 'px solid ' + s.bc : '0'};border-radius:${s.radius}mm;padding:${s.pad}mm;`;
+  const font = `font-size:${s.fs}pt;font-weight:${s.bold ? 700 : 400};font-style:${s.italic ? 'italic' : 'normal'};color:${s.color};text-align:${s.align};line-height:${s.lh};`;
+  const jc = { start: 'flex-start', center: 'safe center', end: 'flex-end' }[s.valign || 'center'];
+  const cls = ['el', e.id === ui.sel ? 'sel' : '', e.locked ? 'locked' : ''].join(' ');
+  return `<div class="${cls}" data-id="${e.id}" style="${box}${deco}${font}"><div class="content" style="justify-content:${jc}">${inner(e)}</div></div>`;
+}
+
+function inner(e) {
+  const s = e.style, d = getCAT()[e.key];
+  switch (e.type) {
+    case 'field': {
+      const lbl = e.label ?? d.label;
+      const v = ui.preview ? esc(D()[e.key] ?? '') : `<span class="ph">${esc(d.label)}</span>`;
+      return `<div>${e.showLabel ? `<span style="font-weight:700;color:${s.lblColor}">${esc(lbl)}:</span> ` : ''}${v}</div>`;
+    }
+    case 'text': return `<div class="txt">${esc(e.text).replace(/\n/g, '<br>')}</div>`;
+    case 'logo':
+    case 'image':
+      return e.src ? `<img src="${e.src}" alt="" style="width:100%;height:100%;object-fit:${s.fit};display:block">`
+        : `<div class="img-ph">${esc(d.label)}<small>${L('imgDbl')}</small></div>`;
+    case 'hline': return `<div style="width:100%;border-top:${s.bw}px ${s.dash ? 'dashed' : 'solid'} ${s.bc}"></div>`;
+    case 'vline': return `<div style="position:absolute;left:50%;top:0;bottom:0;border-left:${s.bw}px ${s.dash ? 'dashed' : 'solid'} ${s.bc}"></div>`;
+    case 'rect': return '';
+    case 'rxSymbol': return '<div>℞</div>';
+    case 'rxTable':
+    case 'invTable': return tableInner(e);
+    case 'totals': return totalsInner(e);
+    case 'signature': return `<div style="border-top:1px solid ${s.color};padding-top:1mm">${esc(e.text)}</div>`;
+    case 'stamp': return `<div class="stamp" style="width:100%;height:100%;border:1.2px dashed currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center">${esc(e.text)}</div>`;
+    case 'qr': return qrSVG();
+  }
+  return '';
+}
+
+function tableInner(e) {
+  const isRx = e.type === 'rxTable';
+  const rxCols = L('rxCols');
+  const invCols = L('invCols');
+  const RX_COLS = [
+    { k: 'i', t: rxCols.i, w: 7 }, { k: 'name', t: rxCols.name, w: 30 }, { k: 'dose', t: rxCols.dose },
+    { k: 'freq', t: rxCols.freq }, { k: 'dur', t: rxCols.dur }, { k: 'note', t: rxCols.note }
+  ];
+  const INV_COLS = [
+    { k: 'i', t: invCols.i, w: 6 }, { k: 'name', t: invCols.name, w: 38 }, { k: 'tooth', t: invCols.tooth, w: 9 },
+    { k: 'qty', t: invCols.qty, w: 9 }, { k: 'price', t: invCols.price }, { k: 'total', t: invCols.total }
+  ];
+  
+  const colsList = (isRx ? RX_COLS : INV_COLS).filter(c => e.cols.includes(c.k));
+  const rows = isRx ? D().meds : D().items;
+  const th = colsList.map(c => `<th style="width:${c.w ? c.w + '%' : 'auto'}">${esc(c.t)}</th>`).join('');
+  const tr = rows.map((r, i) => '<tr>' + colsList.map(c => {
+    let v;
+    if (c.k === 'i') v = i + 1;
+    else if (c.k === 'price') v = money(r.price);
+    else if (c.k === 'total') v = money(r.qty * r.price);
+    else v = r[c.k];
+    return `<td>${esc(v)}</td>`;
+  }).join('') + '</tr>').join('');
+  return `<table class="tbl" style="--tb:${e.style.tbc}"><thead><tr style="background:${e.style.headBg}">${th}</tr></thead><tbody>${tr}</tbody></table>`;
+}
+function totalsInner(e) {
+  const d = D();
+  const sub = d.items.reduce((a, r) => a + r.qty * r.price, 0), tot = sub - d.discount;
+  const tl = L('totLbls');
+  const rows = [[tl[0], sub], [tl[1], d.discount], [tl[2], tot, 1], [tl[3], d.paid], [tl[4], tot - d.paid, 1]];
+  return `<table class="tot" style="--tb:${e.style.tbc}">${rows.map(([l, v, b]) => `<tr class="${b ? 'b' : ''}"><td>${l}</td><td class="num">${money(v)}</td></tr>`).join('')}</table>`;
+}
+let qrCache = null;
+function qrSVG() {
+  if (qrCache) return qrCache;
+  let seed = 11, r = '';
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const inF = (x, y) => (x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12);
+  for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) if (!inF(x, y) && rnd() > .5) r += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  const f = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3"/>`;
+  return (qrCache = `<svg viewBox="0 0 21 21" width="100%" height="100%" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">${r}${f(0, 0)}${f(14, 0)}${f(0, 14)}</svg>`);
+}
+function selboxHTML(e) {
+  const hs = e.locked ? [] : ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+  return `<div class="selbox" style="left:${e.x}mm;top:${e.y}mm;width:${e.w}mm;height:${e.h}mm">${hs.map(d => `<div class="hdl h-${d}" data-h="${d}"></div>`).join('')}<div class="selinfo">${e.locked ? L('lockedText') : ''}${r1(e.w)} × ${r1(e.h)} ${L('mm')}</div></div>`;
+}
+function place(node, e) {
+  if (!node) return;
+  node.style.left = e.x + 'mm'; node.style.top = e.y + 'mm';
+  node.style.width = e.w + 'mm'; node.style.height = e.h + 'mm';
+}
+function markOverflow() {
+  let n = 0;
+  paperEl.querySelectorAll('.el').forEach(d => {
+    const c = d.querySelector('.content'), kids = [...c.children];
+    const hh = kids.reduce((a, k) => a + k.offsetHeight, 0), ww = Math.max(0, ...kids.map(k => k.offsetWidth));
+    const over = hh > c.clientHeight + 1 || ww > c.clientWidth + 1;
+    d.classList.toggle('overflow', over);
+    if (over) n++;
+  });
+  ui.overflow = n;
+}
+function showGuides(gs) {
+  const g = $('#guides'); if (!g) return;
+  g.innerHTML = gs.map(x => x.v ? `<div class="guide v" style="left:${x.at}mm"></div>` : `<div class="guide h" style="top:${x.at}mm"></div>`).join('');
+}
+
+/* ===================== Palette ===================== */
+function renderPalette() {
+  const used = new Set(els().map(e => e.key));
+  const CAT = getCAT();
+  let h = `<div class="muted" style="margin:4px 2px">${L('palHint')}</div>`;
+  for (const g of DOC_GROUPS[S.docType]) {
+    const gName = L('g' + g.charAt(0).toUpperCase() + g.slice(1)) || g;
+    h += `<div class="group"><h3>${gName}</h3>`;
+    for (const [k, d] of Object.entries(CAT)) {
+      if (d.g !== g) continue;
+      const mark = g !== 'general' && used.has(k) ? '<span class="used">✓</span>' : '';
+      h += `<button class="pal-item" draggable="true" data-key="${k}"><span class="ic">${d.ic}</span>${esc(d.label)}${mark}</button>`;
+    }
+    h += '</div>';
+  }
+  const pal = $('#palette');
+  pal.innerHTML = h;
+  pal.classList.toggle('disabled', ui.preview);
+}
+
+/* ===================== Interactions ===================== */
+$('#langSeg').addEventListener('click', e => {
+  if(e.target.tagName !== 'BUTTON') return;
+  lang = e.target.dataset.lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('#langSeg button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  render();
+  renderProps();
+});
+
+// Update toolbar state
+function updateToolbar() {
+  $('#docSeg button.on')?.classList.remove('on');
+  $(`#docSeg button[data-doc="${S.docType}"]`).classList.add('on');
+  $('#paperSeg button.on')?.classList.remove('on');
+  $(`#paperSeg button[data-paper="${doc().paper}"]`).classList.add('on');
+  $('#modeSeg button.on')?.classList.remove('on');
+  $(`#modeSeg button[data-mode="${ui.preview ? 'preview' : 'design'}"]`).classList.add('on');
+  $('#sample').value = S.sample;
+  $('#undo').disabled = !undoS.length;
+  $('#redo').disabled = !redoS.length;
+  $('#gridBtn').classList.toggle('on', ui.grid);
+  $('#snapBtn').classList.toggle('on', ui.snap);
+  $('#zoomVal').textContent = Math.round(ui.zoom * 100) + '%';
+}
+function updateStatus() {
+  $('#st-warn').textContent = ui.overflow ? L('overwarn') : '';
+}
+
+$('#palette').addEventListener('dragstart', e => {
+  const b = e.target.closest('.pal-item'); if (!b) return;
+  e.dataTransfer.setData('text/plain', b.dataset.key);
+  e.dataTransfer.effectAllowed = 'copy';
+});
+$('#palette').addEventListener('click', e => {
+  const b = e.target.closest('.pal-item'); if (!b) return;
+  const p = P(), n = els().length % 6;
+  addEl(b.dataset.key, p.w / 2 + n * 3, p.h / 3 + n * 4);
+});
+stage.addEventListener('dragover', e => { if (!ui.preview) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+stage.addEventListener('drop', e => {
+  e.preventDefault();
+  const key = e.dataTransfer.getData('text/plain');
+  if (!getCAT()[key] || ui.preview) return;
+  const r = paperEl.getBoundingClientRect(), k = PX * ui.zoom;
+  addEl(key, (e.clientX - r.left) / k, (e.clientY - r.top) / k);
+});
+function addEl(key, cx, cy) {
+  const p = P(), el = createEl(key, 0, 0, S.docType);
+  el.w = Math.min(el.w, p.w - 2 * SAFE); el.h = Math.min(el.h, p.h - 2 * SAFE);
+  el.x = r1(clamp(Math.round(cx - el.w / 2), 0, p.w - el.w));
+  el.y = r1(clamp(Math.round(cy - el.h / 2), 0, p.h - el.h));
+  mutate(() => { els().push(el); ui.sel = el.id; });
+  msg(L('addPos') + getCAT()[key].label);
+}
+
+paperEl.addEventListener('pointerdown', e => {
+  if (ui.preview || e.button !== 0) return;
+  if (e.target.isContentEditable) return;
+  const hd = e.target.closest('.hdl');
+  if (hd) { e.preventDefault(); startResize(e, hd.dataset.h); return; }
+  const node = e.target.closest('.el');
+  if (!node) { select(null); return; }
+  e.preventDefault();
+  const id = node.dataset.id, now = Date.now();
+  if (lastDown.id === id && now - lastDown.t < 400) { lastDown = {}; dblAction(getEl(id)); return; }
+  lastDown = { id, t: now };
+  if (ui.sel !== id) select(id);
+  const el = getEl(id);
+  if (!el.locked) startMove(e, el);
+});
+paperEl.addEventListener('pointermove', e => {
+  const r = paperEl.getBoundingClientRect(), k = PX * ui.zoom;
+  $('#st-pos').textContent = L('curPos') + r1((e.clientX - r.left) / k) + ' , ' + r1((e.clientY - r.top) / k) + ' ' + L('mm');
+});
+stage.addEventListener('pointerdown', e => { if (e.target === stage || e.target === sizer) select(null); });
+
+function select(id) { ui.sel = id; render(); renderProps(); }
+
+function snapTargets(self) {
+  const p = P();
+  const tx = [0, p.w / 2, p.w, SAFE, p.w - SAFE], ty = [0, p.h / 2, p.h, SAFE, p.h - SAFE];
+  els().forEach(o => { if (o.id === self.id) return; tx.push(o.x, o.x + o.w / 2, o.x + o.w); ty.push(o.y, o.y + o.h / 2, o.y + o.h); });
+  return { tx, ty };
+}
+function best(cands, targets, th) {
+  let r = null;
+  for (const c of cands) for (const t of targets) {
+    const d = t - c;
+    if (Math.abs(d) <= th && (!r || Math.abs(d) < Math.abs(r.d))) r = { d, t };
+  }
+  return r;
+}
+
+function startMove(ev, el) {
+  const snap0 = JSON.stringify(S), sx = ev.clientX, sy = ev.clientY, ox = el.x, oy = el.y, k = 1 / (PX * ui.zoom);
+  const node = paperEl.querySelector(`.el[data-id="${el.id}"]`), sb = paperEl.querySelector('.selbox');
+  const { tx, ty } = snapTargets(el), th = 5 * k, p = P();
+  let moved = false;
+  paperEl.setPointerCapture(ev.pointerId);
+  const onMove = m => {
+    if (!moved && Math.hypot(m.clientX - sx, m.clientY - sy) < 3) return;
+    moved = true;
+    let x = ox + (m.clientX - sx) * k, y = oy + (m.clientY - sy) * k;
+    const gs = [];
+    if (ui.snap && !m.altKey) {
+      const bx = best([x, x + el.w / 2, x + el.w], tx, th), by = best([y, y + el.h / 2, y + el.h], ty, th);
+      if (bx) { x += bx.d; gs.push({ v: 1, at: bx.t }); } else x = Math.round(x);
+      if (by) { y += by.d; gs.push({ v: 0, at: by.t }); } else y = Math.round(y);
+    }
+    el.x = r1(clamp(x, 0, p.w - el.w)); el.y = r1(clamp(y, 0, p.h - el.h));
+    place(node, el); place(sb, el); showGuides(gs);
+  };
+  const onUp = () => {
+    paperEl.removeEventListener('pointermove', onMove);
+    paperEl.removeEventListener('pointerup', onUp);
+    paperEl.removeEventListener('pointercancel', onUp);
+    showGuides([]);
+    if (moved) { pushUndo(snap0); lastKey = null; save(); render(); renderProps(); }
+  };
+  paperEl.addEventListener('pointermove', onMove);
+  paperEl.addEventListener('pointerup', onUp);
+  paperEl.addEventListener('pointercancel', onUp);
+}
+
+function startResize(ev, dir) {
+  const el = selEl(); if (!el || el.locked) return;
+  const snap0 = JSON.stringify(S), sx = ev.clientX, sy = ev.clientY, k = 1 / (PX * ui.zoom);
+  const s0 = { L: el.x, T: el.y, R: el.x + el.w, B: el.y + el.h };
+  const node = paperEl.querySelector(`.el[data-id="${el.id}"]`), sb = paperEl.querySelector('.selbox');
+  const { tx, ty } = snapTargets(el), th = 5 * k, p = P(), MIN = 2;
+  let moved = false;
+  paperEl.setPointerCapture(ev.pointerId);
+  const onMove = m => {
+    moved = true;
+    const dx = (m.clientX - sx) * k, dy = (m.clientY - sy) * k, gs = [];
+    const sn = (v, targets, v1) => {
+      if (!ui.snap || m.altKey) return v;
+      const b = best([v], targets, th);
+      if (b) { gs.push({ v: v1, at: b.t }); return b.t; }
+      return Math.round(v);
+    };
+    let { L, T, R, B } = s0;
+    if (dir.includes('w')) L = clamp(sn(L + dx, tx, 1), 0, R - MIN);
+    if (dir.includes('e')) R = clamp(sn(R + dx, tx, 1), L + MIN, p.w);
+    if (dir.includes('n')) T = clamp(sn(T + dy, ty, 0), 0, B - MIN);
+    if (dir.includes('s')) B = clamp(sn(B + dy, ty, 0), T + MIN, p.h);
+    el.x = r1(L); el.y = r1(T); el.w = r1(R - L); el.h = r1(B - T);
+    place(node, el); place(sb, el); showGuides(gs);
+    const info = sb && sb.querySelector('.selinfo'); if (info) info.textContent = `${r1(el.w)} × ${r1(el.h)} ${L('mm')}`;
+  };
+  const onUp = () => {
+    paperEl.removeEventListener('pointermove', onMove);
+    paperEl.removeEventListener('pointerup', onUp);
+    paperEl.removeEventListener('pointercancel', onUp);
+    showGuides([]);
+    if (moved) { pushUndo(snap0); lastKey = null; save(); render(); renderProps(); }
+  };
+  paperEl.addEventListener('pointermove', onMove);
+  paperEl.addEventListener('pointerup', onUp);
+  paperEl.addEventListener('pointercancel', onUp);
+}
+
+function dblAction(el) {
+  if (!el) return;
+  if (el.type === 'text') return editText(el);
+  if (el.type === 'logo' || el.type === 'image') { ui.sel = el.id; return $('#imgFile').click(); }
+  if (el.type === 'field') { const i = $('#props [data-p="label"]'); if (i) { i.focus(); i.select(); } }
+  if (el.type === 'signature' || el.type === 'stamp') { const t = $('#props textarea'); if (t) t.focus(); }
+}
+function editText(el) {
+  const node = paperEl.querySelector(`.el[data-id="${el.id}"] .txt`); if (!node) return;
+  node.contentEditable = 'true'; node.focus();
+  const range = document.createRange(); range.selectNodeContents(node);
+  const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  node.addEventListener('keydown', k => { if (k.key === 'Escape') node.blur(); k.stopPropagation(); });
+  node.addEventListener('blur', () => {
+    const v = node.innerText.replace(/\n+$/, '');
+    if (v !== el.text) mutate(() => { el.text = v; }); else render();
+  }, { once: true });
+}
+
+$('#imgFile').addEventListener('change', e => {
+  const f = e.target.files[0]; e.target.value = '';
+  const el = selEl(); if (!f || !el) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 700, sc = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const url = c.toDataURL(f.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', .9);
+      mutate(() => { el.src = url; });
+      msg(L('imgUp'));
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+});
+
+/* ===================== Properties panel ===================== */
+const num = (p, l, v, step = 0.5) => `<label class="f"><span>${l}</span><input type="number" step="${step}" data-p="${p}" value="${+(+v).toFixed(2)}"></label>`;
+const col = (p, l, v) => `<label class="f"><span>${l}</span><input type="color" data-p="${p}" value="${v && v.startsWith('#') ? v : '#ffffff'}"></label>`;
+const chk = (p, l, v) => `<label class="c"><input type="checkbox" data-p="${p}" ${v ? 'checked' : ''}> ${l}</label>`;
+const txt = (p, l, v) => `<label class="f"><span>${l}</span><input type="text" data-p="${p}" value="${esc(v)}"></label>`;
+const sec = (t, b) => `<section class="ps"><h4>${t}</h4>${b}</section>`;
+
+function renderProps() {
+  const box = $('#props'), el = ui.preview ? null : selEl();
+  if (!el) { box.innerHTML = docPanel(); return; }
+  const CAT = getCAT();
+  const d = CAT[el.key], s = el.style, t = el.type;
+  const line = t === 'hline' || t === 'vline';
+  const textual = !['hline', 'vline', 'rect', 'logo', 'image', 'qr'].includes(t);
+  let h = `<div class="ph-head"><b>${d.ic} ${esc(d.label)}</b><button data-act="deselect" title="✕">✕</button></div>`;
+
+  h += sec(L('pPos'),
+    `<div class="g2">${num('x', L('pX'), el.x)}${num('y', L('pY'), el.y)}${num('w', L('pW'), el.w)}${num('h', L('pH'), el.h)}</div>
+     <div class="btns"><button data-act="alignRight">${L('pARgt')}</button><button data-act="centerH">${L('pCH')}</button><button data-act="alignLeft">${L('pALft')}</button><button data-act="centerV">${L('pCV')}</button><button data-act="fullW">${L('pFW')}</button></div>`);
+
+  if (t === 'field') h += sec('المحتوى',
+    chk('showLabel', L('pLbl'), el.showLabel) +
+    txt('label', L('pLblTxt'), el.label ?? d.label) +
+    `<p class="muted">${L('pAuto')}</p>`);
+  if (t === 'text' || t === 'signature' || t === 'stamp')
+    h += sec(L('pTxt'), `<textarea data-p="text" rows="3">${esc(el.text)}</textarea>${t === 'text' ? '<p class="muted">'+L('pTxtHint')+'</p>' : ''}`);
+  
+  if (t === 'rxTable' || t === 'invTable') {
+    const rxCols = L('rxCols');
+    const invCols = L('invCols');
+    const all = t === 'rxTable' ? [
+        { k: 'i', t: rxCols.i }, { k: 'name', t: rxCols.name }, { k: 'dose', t: rxCols.dose },
+        { k: 'freq', t: rxCols.freq }, { k: 'dur', t: rxCols.dur }, { k: 'note', t: rxCols.note }
+    ] : [
+        { k: 'i', t: invCols.i }, { k: 'name', t: invCols.name }, { k: 'tooth', t: invCols.tooth },
+        { k: 'qty', t: invCols.qty }, { k: 'price', t: invCols.price }, { k: 'total', t: invCols.total }
+    ];
+    h += sec(L('pCol'), all.map(c => chk('col:' + c.k, c.t === '#' ? L('pColNo') : c.t, el.cols.includes(c.k))).join('') +
+      `<div class="g2" style="margin-top:6px">${col('s.headBg', L('pHeadBg'), s.headBg)}${col('s.tbc', L('pTbc'), s.tbc)}</div>`);
+  }
+  if (t === 'totals') h += sec('الجدول', col('s.tbc', L('pTbL'), s.tbc));
+  if (t === 'logo' || t === 'image')
+    h += sec('الصورة', `<div class="btns"><button data-act="upload">${L('pImgBtn')}</button>${el.src ? '<button data-act="clearImg" class="danger">'+L('pImgDel')+'</button>' : ''}</div>
+      <label class="f" style="margin-top:8px"><span>${L('pFit')}</span><select data-p="s.fit"><option value="contain" ${s.fit === 'contain' ? 'selected' : ''}>${L('pCont')}</option><option value="cover" ${s.fit === 'cover' ? 'selected' : ''}>${L('pFill')}</option></select></label>`);
+
+  if (textual) {
+    h += sec(L('pFnt'),
+      `<div class="g2">${num('s.fs', L('pSz'), s.fs)}</div>
+       ${chk('s.bold', L('pBld'), s.bold)}${chk('s.italic', L('pIta'), s.italic)}
+       <div class="g2" style="margin-top:6px">
+         <div class="f"><span>${L('pAln')}</span><div class="seg" style="width:100%"><button style="flex:1" data-act="textAlign:right" class="${s.align === 'right' ? 'on' : ''}">${L('pRgt')}</button><button style="flex:1" data-act="textAlign:center" class="${s.align === 'center' ? 'on' : ''}">${L('pCen')}</button><button style="flex:1" data-act="textAlign:left" class="${s.align === 'left' ? 'on' : ''}">${L('pLft')}</button></div></div>
+         <div class="f"><span>${L('pVAln')}</span><div class="seg" style="width:100%"><button style="flex:1" data-act="valign:start" class="${s.valign === 'start' ? 'on' : ''}">${L('pTop')}</button><button style="flex:1" data-act="valign:center" class="${s.valign === 'center' ? 'on' : ''}">${L('pMid')}</button><button style="flex:1" data-act="valign:end" class="${s.valign === 'end' ? 'on' : ''}">${L('pBot')}</button></div></div>
+       </div>
+       <div class="g2" style="margin-top:6px">${col('s.color', L('pColTxt'), s.color)}${num('s.lh', L('pLh'), s.lh, 0.05)}</div>
+       ${t === 'field' && el.showLabel ? col('s.lblColor', L('pLblCol'), s.lblColor) : ''}`);
+  }
+  if (line) h += sec(L('pLine'), `<div class="g2">${num('s.bw', L('pThick'), s.bw)}${col('s.bc', L('pColTxt'), s.bc)}</div>${chk('s.dash', L('pDash'), s.dash)}`);
+  if (!line) h += sec(L('pBox'),
+    `${chk('bgNone', L('pNoBg'), s.bg === 'transparent')}
+     <div class="g2">${col('s.bg', L('pBg'), s.bg)}${num('s.radius', L('pRad'), s.radius)}</div>
+     <div class="g2">${num('s.bw', L('pBw'), s.bw)}${col('s.bc', L('pBc'), s.bc)}</div>
+     ${num('s.pad', L('pPad'), s.pad)}`);
+
+  h += sec(L('pArr'),
+    `<div class="btns">
+      <button data-act="front">${L('pFrt')}</button><button data-act="back">${L('pBck')}</button>
+      <button data-act="lock">${el.locked ? L('pUnl') : L('pLock')}</button>
+      <button data-act="dup">${L('pDup')}</button>
+      <button data-act="del" class="danger">${L('pDel')}</button></div>`);
+  box.innerHTML = h;
+}
+
+function docPanel() {
+  const dd = doc();
+  const fontOpts = Object.keys(FONTS).map(f => `<option ${dd.font === f ? 'selected' : ''}>${f}</option>`).join('');
+  return `<b>${L('sTpl')}</b>
+    ${sec(L('sPap'), `<div class="seg">${['A5', 'A4'].map(p => `<button data-act="paper:${p}" class="${dd.paper === p ? 'on' : ''}">${p} (${PAPERS[p].w}×${PAPERS[p].h} ${L('mm')})</button>`).join('')}</div>
+      <p class="muted">${L('sPapH')}</p>`)}
+    ${sec(L('sGen'), `<div class="g2"><label class="f"><span>${L('sFnt')}</span><select data-doc="font">${fontOpts}</select></label>
+      <label class="f"><span>${L('sCur')}</span><input type="text" data-doc="currency" value="${esc(S.currency)}"></label></div>`)}
+    ${sec(L('sTpl'), `<div class="btns"><button data-act="resetTpl">${L('sRes')}</button><button data-act="clearAll" class="danger">${L('sClr')}</button></div>
+      <p class="muted">${L('sEls')} ${els().length}</p>`)}
+    ${sec(L('sHow'), `<ul class="tips">
+      <li>${L('sH1')}</li>
+      <li>${L('sH2')}</li>
+      <li>${L('sH3')}</li></ul>`)}`;
+}
+
+$('#props').addEventListener('input', e => {
+  const el = selEl(), p = e.target.dataset.p, docKey = e.target.dataset.doc;
+  if (docKey) return mutate(() => {
+    if (docKey === 'currency') S.currency = e.target.value;
+    else doc()[docKey] = e.target.value;
+  }, { key: 'doc:' + docKey });
+  if (!el || !p) return;
+  const v = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'number' ? +e.target.value : e.target.value;
+  mutate(() => {
+    if (p.startsWith('col:')) {
+      const k = p.split(':')[1];
+      if (v) el.cols.push(k); else el.cols = el.cols.filter(x => x !== k);
+    } else if (p.startsWith('s.')) {
+      el.style[p.substring(2)] = v;
+    } else if (p === 'bgNone') {
+      el.style.bg = v ? 'transparent' : '#ffffff';
+      if (!v && e.target.nextElementSibling) {
+        const i = e.target.nextElementSibling.querySelector('input[type=color]');
+        if (i) { i.value = '#ffffff'; el.style.bg = '#ffffff'; }
+      }
+    } else {
+      el[p] = v;
+    }
+  }, { key: 'el:' + el.id + ':' + p, skipProps: true });
+});
+
+$('#props').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const act = b.dataset.act, el = selEl();
+  if (act === 'resetTpl') {
+    if (confirm('سيتم حذف كل التعديلات والعودة للقالب الأصلي. متأكد؟')) mutate(() => { S.docs[S.docType].els = S.docType === 'rx' ? tplRx() : tplInv(); ui.sel = null; });
+  } else if (act === 'clearAll') {
+    if (confirm('سيتم مسح الورقة بالكامل. متأكد؟')) mutate(() => { els().length = 0; ui.sel = null; });
+  } else if (act.startsWith('paper:')) {
+    const p = act.split(':')[1];
+    if (doc().paper !== p) mutate(() => {
+      const o = doc().paper, n = p; doc().paper = p;
+      const kx = PAPERS[n].w / PAPERS[o].w, ky = PAPERS[n].h / PAPERS[o].h;
+      els().forEach(e => { e.x = r1(e.x * kx); e.y = r1(e.y * ky); e.w = r1(e.w * kx); e.h = r1(e.h * ky); });
+    });
+  }
+  if (!el) return;
+  if (act === 'deselect') select(null);
+  else if (act === 'del') mutate(() => { els().splice(els().indexOf(el), 1); ui.sel = null; });
+  else if (act === 'dup') mutate(() => { const n = JSON.parse(JSON.stringify(el)); n.id = uid(); n.x += 5; n.y += 5; els().push(n); ui.sel = n.id; });
+  else if (act === 'lock') mutate(() => { el.locked = !el.locked; });
+  else if (act === 'front') mutate(() => { const arr = els(), i = arr.indexOf(el); if (i < arr.length - 1) { arr.splice(i, 1); arr.push(el); } });
+  else if (act === 'back') mutate(() => { const arr = els(), i = arr.indexOf(el); if (i > 0) { arr.splice(i, 1); arr.unshift(el); } });
+  else if (act === 'alignRight') mutate(() => { el.x = r1(P().w - el.w - SAFE); });
+  else if (act === 'alignLeft') mutate(() => { el.x = SAFE; });
+  else if (act === 'centerH') mutate(() => { el.x = r1((P().w - el.w) / 2); });
+  else if (act === 'centerV') mutate(() => { el.y = r1((P().h - el.h) / 2); });
+  else if (act === 'fullW') mutate(() => { el.w = P().w - 2 * SAFE; el.x = SAFE; });
+  else if (act === 'upload') $('#imgFile').click();
+  else if (act === 'clearImg') mutate(() => { el.src = null; });
+  else if (act.startsWith('textAlign:')) mutate(() => { el.style.align = act.split(':')[1]; });
+  else if (act.startsWith('valign:')) mutate(() => { el.style.valign = act.split(':')[1]; });
+});
+
+/* ===================== Toolbar & Shortcuts ===================== */
+$('#docSeg').addEventListener('click', e => { if (e.target.dataset.doc) { S.docType = e.target.dataset.doc; ui.sel = null; save(); render(); renderProps(); } });
+$('#paperSeg').addEventListener('click', e => {
+  const p = e.target.dataset.paper; if (p && p !== doc().paper) mutate(() => {
+    const o = doc().paper; doc().paper = p;
+    const kx = PAPERS[p].w / PAPERS[o].w, ky = PAPERS[p].h / PAPERS[o].h;
+    els().forEach(x => { x.x = r1(x.x * kx); x.y = r1(x.y * ky); x.w = r1(x.w * kx); x.h = r1(x.h * ky); });
+  });
+});
+$('#modeSeg').addEventListener('click', e => { if (e.target.dataset.mode) { ui.preview = e.target.dataset.mode === 'preview'; select(null); } });
+$('#sample').addEventListener('change', e => { S.sample = e.target.value; save(); render(); });
+$('#undo').onclick = undo; $('#redo').onclick = redo;
+$('#gridBtn').onclick = () => { ui.grid = !ui.grid; render(); };
+$('#snapBtn').onclick = () => { ui.snap = !ui.snap; render(); };
+
+const setZ = z => { ui.zoom = clamp(z, .4, 3); render(); };
+$('#zoomOut').onclick = () => setZ(ui.zoom - .1);
+$('#zoomIn').onclick = () => setZ(ui.zoom + .1);
+$('#zoomFit').onclick = () => {
+  const r = stage.getBoundingClientRect(), p = P();
+  setZ(Math.min((r.width - 60) / (p.w * PX), (r.height - 60) / (p.h * PX)));
+};
+stage.addEventListener('wheel', e => {
+  if (e.ctrlKey) { e.preventDefault(); setZ(ui.zoom - Math.sign(e.deltaY) * 0.1); }
+}, { passive: false });
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+  if (e.key === 'z' && e.ctrlKey) { e.preventDefault(); undo(); }
+  if (e.key === 'y' && e.ctrlKey) { e.preventDefault(); redo(); }
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    const el = selEl(); if (el && !el.locked) mutate(() => { els().splice(els().indexOf(el), 1); ui.sel = null; });
+  }
+  if (e.key === 'Escape') select(null);
+  if (e.key === 'd' && e.ctrlKey) {
+    e.preventDefault(); const el = selEl();
+    if (el) mutate(() => { const n = JSON.parse(JSON.stringify(el)); n.id = uid(); n.x += 5; n.y += 5; els().push(n); ui.sel = n.id; });
+  }
+  const step = e.shiftKey ? 5 : 1;
+  const el = selEl();
+  if (el && !el.locked && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    mutate(() => {
+      const p = P();
+      if (e.key === 'ArrowUp') el.y = clamp(el.y - step, 0, p.h - el.h);
+      if (e.key === 'ArrowDown') el.y = clamp(el.y + step, 0, p.h - el.h);
+      if (e.key === 'ArrowLeft') el.x = clamp(el.x - step, 0, p.w - el.w);
+      if (e.key === 'ArrowRight') el.x = clamp(el.x + step, 0, p.w - el.w);
+    });
+  }
+});
+
+/* ===================== Export / Import / Print ===================== */
+$('#exportBtn').onclick = () => {
+  const b = new Blob([JSON.stringify(S)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'clinic_design.json';
+  a.click();
+};
+$('#importBtn').onclick = () => $('#importFile').click();
+$('#importFile').onchange = e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const d = JSON.parse(rd.result);
+      if (d.docs && d.docs.rx) { pushUndo(JSON.stringify(S)); S = d; ui.sel = null; save(); render(); renderProps(); msg('تم استيراد التصميم'); }
+      else alert('ملف غير صالح');
+    } catch { alert('ملف تالف'); }
+  };
+  rd.readAsText(f);
+};
+$('#printBtn').onclick = () => {
+  select(null); const was = ui.preview; ui.preview = true; render();
+  setTimeout(() => { window.print(); ui.preview = was; render(); }, 100);
+};
+
+// Init
+if (!S.currency) S.currency = '$';
+document.documentElement.lang = lang;
+document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+render(); renderProps();
+setTimeout(() => $('#zoomFit').click(), 50);
+</script>
+</body>
+</html>
