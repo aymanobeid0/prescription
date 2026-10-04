@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="py-8 text-center text-slate-500 text-sm mt-20 border-t bg-white">
+      <footer suppressHydrationWarning className="py-8 text-center text-slate-500 text-sm mt-20 border-t bg-white">
         &copy; {new Date().getFullYear()} DentalSaaS. جميع الحقوق محفوظة.
       </footer>
     </div>

@@ -10,7 +10,7 @@ export default async function PatientDetailsPage(
   const params = await props.params;
   const patientId = params.patientId;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user; //  await supabase.auth.getSession();
 
   if (!user) redirect("/login");
 
@@ -58,7 +58,7 @@ export default async function PatientDetailsPage(
                 <div key={doc.id} className="flex justify-between items-center p-4 border rounded hover:bg-slate-50">
                   <div>
                     <p className="font-bold">{doc.doc_type === 'rx' ? 'وصفة طبية' : 'فاتورة'}</p>
-                    <p className="text-sm text-slate-500">{new Date(doc.created_at).toLocaleDateString('ar-SA')}</p>
+                    <p suppressHydrationWarning className="text-sm text-slate-500">{new Date(doc.created_at).toLocaleDateString('ar-SA')}</p>
                   </div>
                   <Link href={`/dashboard/documents/${doc.id}`}>
                     <Button variant="outline">عرض للطباعة</Button>
@@ -72,3 +72,4 @@ export default async function PatientDetailsPage(
     </div>
   );
 }
+

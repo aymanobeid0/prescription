@@ -9,7 +9,7 @@ export async function saveDocument(
   content: AppState["docs"]["rx"] | AppState["docs"]["invoice"]
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user;
 
   if (!user) return { error: "يرجى تسجيل الدخول أولاً" };
   if (!patientId) return { error: "معرّف المريض مفقود" };
@@ -28,3 +28,4 @@ export async function saveDocument(
 
   return { success: true };
 }
+

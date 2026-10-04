@@ -8,7 +8,7 @@ export default async function IssueDocumentPage(
   const params = await props.params;
   const patientId = params.patientId;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user; //  await supabase.auth.getSession();
 
   if (!user) redirect("/login");
 
@@ -32,3 +32,4 @@ export default async function IssueDocumentPage(
     </div>
   );
 }
+

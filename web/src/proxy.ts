@@ -28,11 +28,13 @@ export async function proxy(request: NextRequest) {
   )
 
   // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+  // supabase.auth.getSession(). A simple mistake could make it very hard to debug
   // issues with cross-browser cookies.
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  
+  const user = session?.user;
 
   const url = request.nextUrl.clone()
   

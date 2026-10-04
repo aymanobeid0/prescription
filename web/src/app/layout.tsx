@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} ${tajawal.variable}`}>
-      <body className={`font-sans ${cairo.className} min-h-full flex flex-col`}>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${tajawal.variable}`} suppressHydrationWarning>
+      <body className={`font-sans ${cairo.className} min-h-full flex flex-col`} suppressHydrationWarning>
         {children}
         <Toaster position="top-center" richColors />
       </body>

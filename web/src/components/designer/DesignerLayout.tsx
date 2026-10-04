@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import { useDesignerStore } from "@/store/useDesignerStore";
@@ -12,7 +13,16 @@ interface Props {
 }
 
 export default function DesignerLayout({ patientId }: Props) {
+  const [mounted, setMounted] = useState(false);
   const { previewMode, docs, docType } = useDesignerStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-screen flex items-center justify-center bg-slate-100 text-slate-500">جاري تحميل المصمم...</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-100" dir="rtl">

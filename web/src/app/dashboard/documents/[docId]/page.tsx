@@ -11,7 +11,7 @@ export default async function ViewDocumentPage(
   const params = await props.params;
   const docId = params.docId;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user; //  await supabase.auth.getSession();
 
   if (!user) redirect("/login");
 
@@ -31,7 +31,7 @@ export default async function ViewDocumentPage(
       <div className="print:hidden flex items-center justify-between bg-white border-b border-slate-200 p-4 shadow-sm z-10 sticky top-0">
         <div>
           <h1 className="text-xl font-bold text-sky-800">{title} - {patient?.full_name}</h1>
-          <p className="text-sm text-slate-500">التاريخ: {new Date(doc.created_at).toLocaleDateString('ar-SA')}</p>
+          <p suppressHydrationWarning className="text-sm text-slate-500">التاريخ: {new Date(doc.created_at).toLocaleDateString('ar-SA')}</p>
         </div>
         <div className="flex gap-2">
           <Link href={`/dashboard/patients/${patient?.id}`}>
@@ -47,3 +47,4 @@ export default async function ViewDocumentPage(
     </div>
   );
 }
+
