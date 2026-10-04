@@ -15,7 +15,7 @@ export default function SidebarNav() {
   ];
 
   return (
-    <nav className="flex-1 p-4 flex flex-col gap-2">
+    <nav className="flex-1 p-2 md:p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible scrollbar-hide">
       {links.map((link) => {
         const isActive = link.exact 
           ? pathname === link.href 
@@ -25,7 +25,8 @@ export default function SidebarNav() {
           <Link 
             key={link.href} 
             href={link.href} 
-            className={`p-2 rounded-md transition-colors font-medium ${
+            role="button"
+            className={`p-2 px-4 md:px-3 rounded-md transition-colors font-medium whitespace-nowrap shrink-0 flex items-center ${
               isActive 
                 ? "bg-sky-600 text-white shadow-sm" 
                 : "text-slate-700 hover:bg-sky-50 hover:text-sky-700"

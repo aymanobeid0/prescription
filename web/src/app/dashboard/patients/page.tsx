@@ -21,12 +21,14 @@ export default async function PatientsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">سجل المرضى</h1>
-          <p className="text-slate-500 mt-2">إدارة مرضاك وسجلاتهم الطبية.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">سجل المرضى</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">إدارة مرضاك وسجلاتهم الطبية.</p>
         </div>
-        <AddPatientDialog />
+        <div className="w-full sm:w-auto">
+          <AddPatientDialog />
+        </div>
       </div>
 
       <Card>

@@ -26,9 +26,9 @@ export default async function CalendarPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">تقويم المواعيد</h1>
-        <p className="text-slate-500 mt-2">إدارة وتنظيم مواعيد العيادة بشكل يومي وأسبوعي.</p>
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">تقويم المواعيد</h1>
+        <p className="text-sm md:text-base text-slate-500 mt-1">إدارة وتنظيم مواعيد العيادة بشكل يومي وأسبوعي والشهر.</p>
       </div>
       
       <CalendarClient patients={patients || []} initialAppointments={appointments || []} />

@@ -161,15 +161,15 @@ export default function CalendarClient({ patients, initialAppointments }: { pati
           <DialogTrigger className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-md shadow-sm transition-colors text-sm font-medium">
             + موعد جديد
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-lg p-6">
             <DialogHeader>
-              <DialogTitle>حجز موعد جديد</DialogTitle>
+              <DialogTitle className="text-xl font-bold">حجز موعد جديد</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleSubmit} className="space-y-5 mt-4">
               <div className="space-y-2">
-                <Label>المريض</Label>
+                <Label className="text-sm font-semibold">المريض</Label>
                 <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                  className="h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-3 py-2 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   value={patientId}
                   onChange={(e) => setPatientId(e.target.value)}
                   required
@@ -181,18 +181,18 @@ export default function CalendarClient({ patients, initialAppointments }: { pati
                 </select>
               </div>
               <div className="space-y-2">
-                <Label>تاريخ الموعد</Label>
+                <Label className="text-sm font-semibold">تاريخ الموعد</Label>
                 <Input type="date" required value={date} onChange={e => setDate(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>الوقت</Label>
+                  <Label className="text-sm font-semibold">الوقت</Label>
                   <Input type="time" required value={time} onChange={e => setTime(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label>المدة</Label>
+                  <Label className="text-sm font-semibold">المدة</Label>
                   <select 
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    className="h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-3 py-2 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                   >
@@ -204,12 +204,14 @@ export default function CalendarClient({ patients, initialAppointments }: { pati
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>سبب الزيارة (اختياري)</Label>
+                <Label className="text-sm font-semibold">سبب الزيارة (اختياري)</Label>
                 <Input placeholder="مثال: فحص دوري، ألم أسنان..." value={reason} onChange={e => setReason(e.target.value)} />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-sky-600 hover:bg-sky-700">
-                {loading ? "جاري الحفظ..." : "حفظ الموعد"}
-              </Button>
+              <div className="pt-2">
+                <Button type="submit" disabled={loading} className="w-full h-12 text-base font-bold bg-sky-600 hover:bg-sky-700 shadow-md">
+                  {loading ? "جاري الحفظ..." : "حفظ الموعد"}
+                </Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>

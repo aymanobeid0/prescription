@@ -21,9 +21,9 @@ export default async function SettingsPage() {
         <span>&rarr;</span>
         <span>العودة للرئيسية</span>
       </Link>
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">إعدادات العيادة</h1>
-        <p className="text-slate-500 mt-2">تحديث بيانات العيادة لتظهر في ترويسة الفواتير والوصفات.</p>
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">إعدادات العيادة</h1>
+        <p className="text-sm md:text-base text-slate-500 mt-1">تحديث بيانات العيادة لتظهر في ترويسة الفواتير والوصفات.</p>
       </div>
 
       <SettingsForm profile={profile || {}} />
