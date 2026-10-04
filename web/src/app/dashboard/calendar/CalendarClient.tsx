@@ -297,3 +297,7 @@ export default function CalendarClient({ patients, initialAppointments }: { pati
     </div>
   );
 }
+
+
+
+

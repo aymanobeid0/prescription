@@ -95,3 +95,7 @@ export default function AddPatientDialog() {
     </Dialog>
   );
 }
+
+
+
+

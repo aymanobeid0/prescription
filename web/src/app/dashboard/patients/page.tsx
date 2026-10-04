@@ -7,7 +7,7 @@ import AddPatientDialog from "./AddPatientDialog";
 
 export default async function PatientsPage() {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user;
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -78,4 +78,9 @@ export default async function PatientsPage() {
     </div>
   );
 }
+
+
+
+
+
 

@@ -123,3 +123,8 @@ export default function IssueDocumentClient({ patient, profile }: { patient: any
     </div>
   );
 }
+
+
+
+
+

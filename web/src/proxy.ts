@@ -30,11 +30,7 @@ export async function proxy(request: NextRequest) {
   // IMPORTANT: Avoid writing any logic between createServerClient and
   // supabase.auth.getSession(). A simple mistake could make it very hard to debug
   // issues with cross-browser cookies.
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  
-  const user = session?.user;
+  const { data: { user } } = await supabase.auth.getUser()
 
   const url = request.nextUrl.clone()
   
@@ -65,3 +61,5 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
+
+

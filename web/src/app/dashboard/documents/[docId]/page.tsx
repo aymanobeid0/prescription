@@ -11,7 +11,7 @@ export default async function ViewDocumentPage(
   const params = await props.params;
   const docId = params.docId;
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession(); const user = session?.user; //  await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser(); //  await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -47,4 +47,10 @@ export default async function ViewDocumentPage(
     </div>
   );
 }
+
+
+
+
+
+
 
