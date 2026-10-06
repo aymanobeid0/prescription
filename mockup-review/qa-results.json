@@ -1,0 +1,39 @@
+{
+  "checks": [
+    "Anonymous mockup loads with 8 seeded appointments and no auth/API requests",
+    "Date navigation, empty day, Today and dentist filtering",
+    "Five-minute proportional appointment, focus trap, Escape and focus restoration",
+    "Doctor/patient overlaps and working hours reject safely; adjacent appointment succeeds",
+    "Appointment editing and explicit destructive cancellation",
+    "Independent unread/pending counts, changed-time confirmation, delivery simulation and rejection",
+    "Patient list search, profile, duplicate-phone recovery, creation and global phone search",
+    "Settings validation and session save update clinic identity",
+    "French locale saves, mirrors layout and preserves session state across pages",
+    "Invoice filter, document preview, browser print invocation and A5 print render",
+    "Reload resets changes and Arabic default",
+    "AR all five pages at 1440px, no page-wide overflow",
+    "FR all five pages at 1440px, no page-wide overflow",
+    "AR all five pages at 1280px, no page-wide overflow",
+    "FR all five pages at 1280px, no page-wide overflow",
+    "AR all five pages at 390px, no page-wide overflow",
+    "FR all five pages at 390px, no page-wide overflow",
+    "No browser runtime/console errors and no backend or Supabase requests"
+  ],
+  "errors": [],
+  "outboundRequests": [],
+  "seedDate": "2026-10-06",
+  "screenshotSizes": [
+    [
+      1440,
+      900
+    ],
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ]
+}

@@ -2,6 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function proxy(request: NextRequest) {
+  // Fictional, memory-only design preview. Never initializes the auth client.
+  if (request.nextUrl.pathname === '/mockup' || request.nextUrl.pathname.startsWith('/mockup/')) {
+    return NextResponse.next()
+  }
   let supabaseResponse = NextResponse.next({
     request,
   })
