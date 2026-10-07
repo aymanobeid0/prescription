@@ -1,0 +1,79 @@
+[
+  {
+    "page": "جدول المواعيد",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "page": "المرضى",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "page": "الفواتير والمستندات",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "page": "الإعدادات",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "locale": "fr",
+    "page": "Agenda",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "locale": "fr",
+    "page": "Patients",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "locale": "fr",
+    "page": "Demandes de rendez-vous",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "locale": "fr",
+    "page": "Factures et documents",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "locale": "fr",
+    "page": "Paramètres",
+    "clientWidth": 1265,
+    "gutter": "stable",
+    "mainWidth": 1041.463623046875,
+    "scrollWidth": 1265,
+    "width": 1280
+  }
+]

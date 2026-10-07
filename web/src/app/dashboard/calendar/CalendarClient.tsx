@@ -94,11 +94,11 @@ export default function CalendarClient({ patients, initialAppointments }: { pati
   });
 
   // Group appointments by date
-  const grouped = filteredAppointments.reduce((acc, curr) => {
+  const grouped = filteredAppointments.reduce<Record<string, typeof initialAppointments>>((acc, curr) => {
     if (!acc[curr.appointment_date]) acc[curr.appointment_date] = [];
     acc[curr.appointment_date].push(curr);
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {});
 
   // Sort dates
   const sortedDates = Object.keys(grouped).sort();

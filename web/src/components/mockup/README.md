@@ -17,8 +17,14 @@ weight. No generated concept image was used, as requested by the user.
 
 ## Behavior
 
+- Shared Base UI select popups match the app in every filter, form and setting:
+  white rounded surfaces, blue selected items/checkmarks and keyboard/Escape
+  support. Dropdowns remain usable within dialogs and in Arabic/French.
+
 - Arabic RTL and French LTR labels, page navigation and dialogs; international
   phone numbers, IDs, times and currency are isolated from surrounding text.
+- A consistent document scrollbar track keeps the shell width stable between
+  short and long sidebar pages; the rule is limited to mockup screens.
 - Clinic-local current day/time, dentist columns and filter, exact-minute
   appointment positioning and duration-proportional heights, including 5 minutes.
 - Creation/edit/cancel with required-field, hours and doctor/patient overlap
@@ -51,3 +57,22 @@ The temporary QA runner was removed after verification.
 Screenshots, QA results and the design fidelity ledger are in
 `C:/Users/ayman/Desktop/dental-UI-design/mockup-review/`.
 User visual approval remains pending; product implementation has not started.
+
+2026-10-07 scrollbar fix: fresh Browser audit reproduced a 15px width change
+between Requests and Settings at 1280x800. All five pages now keep a constant
+width in Arabic/French; mobile 390x844 has no horizontal overflow. Notification
+dialog scroll locking, Escape and focus restoration passed; no captured browser
+errors. Evidence: `mockup-review/scrollbar-2026-10-07/`. CSS-only change; no build
+or TypeScript rerun was needed.
+
+## Review close — 2026-10-07
+
+User ended today's review. Applied notification colors/icons, app dropdowns,
+stationary hover feedback, whole-field pickers, patient identity links, primary
+review buttons, gray canvas/date field, status-colored cards with dark text and
+solid badges, date + Today controls, aligned bold profile/list details.
+Whole-web TypeScript and affected ESLint passed after component changes; later
+CSS changes were browser verified with diff whitespace checks. Audit screenshots
+08–37 are in mockup-review/scrollbar-2026-10-07/. Full visual approval remains
+pending before product integration. Native picker popup contents and full
+accessibility compliance were not verified.

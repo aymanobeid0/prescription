@@ -1,6 +1,9 @@
 "use client";
 import { Dialog } from "@base-ui/react/dialog";
-import { X, TriangleAlert, Search, Inbox, CalendarDays, Clock3 } from "lucide-react";
+import { Select } from "@base-ui/react/select";
+import { DirectionProvider } from "@base-ui/react/direction-provider";
+import { X, TriangleAlert, Search, Inbox, CalendarDays, Clock3, ChevronDown, Check } from "lucide-react";
+import { useMockup } from "./context";
 import { Children, cloneElement, isValidElement, useId, useRef, type ReactNode, type ButtonHTMLAttributes, type InputHTMLAttributes } from "react";
 import type { Locale, Patient } from "./data";
 import type { Label, Translate } from "./labels";
@@ -31,20 +34,23 @@ export function Field({ label, children, wide = false }: { label: string; childr
     if (["input", "select", "textarea"].includes(node.type)) return cloneElement(node, { "aria-labelledby": labelId });
     return node.props.children ? cloneElement(node, {}, associate(node.props.children)) : node;
   });
-  return <label className={`mk-field ${wide ? "mk-field-wide" : ""}`}><span id={labelId}>{label}</span>{associate(children)}</label>;
+  return <div className={`mk-field ${wide ? "mk-field-wide" : ""}`}><span id={labelId}>{label}</span>{associate(children)}</div>;
 }
-export function PickerInput({ type, label, pickerLabel, ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & { type: "date" | "time"; label: string; pickerLabel: string }) {
+export function PickerInput({ type, label, pickerLabel, wrapperClassName = "", ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & { type: "date" | "time"; label: string; pickerLabel: string; wrapperClassName?: string }) {
   const input = useRef<HTMLInputElement>(null);
   const Icon = type === "date" ? CalendarDays : Clock3;
-  return <div className="mk-input-icon mk-picker-input">
-    <button type="button" className="mk-picker-button" aria-label={`${pickerLabel}: ${label}`} onClick={event => {
-      event.preventDefault();
-      const field = input.current;
-      if (!field) return;
-      field.focus();
-      try { field.showPicker?.(); } catch { /* Text/keyboard editing remains available if the browser blocks its picker. */ }
-    }}><Icon aria-hidden="true" /></button>
-    <input {...props} ref={input} type={type} aria-label={label} />
+  const openPicker = () => {
+    const field = input.current;
+    if (!field || field.disabled || field.readOnly) return;
+    field.focus();
+    try { field.showPicker?.(); } catch { /* Keyboard editing remains available if the browser blocks its picker. */ }
+  };
+  return <div className={`mk-input-icon mk-picker-input ${wrapperClassName}`} onClick={event => { event.preventDefault(); openPicker(); }}>
+    <button type="button" className="mk-picker-button" disabled={props.disabled} aria-label={`${pickerLabel}: ${label}`}><Icon aria-hidden="true" /></button>
+    <input {...props} ref={input} type={type} aria-label={label} onKeyDown={event => {
+      props.onKeyDown?.(event);
+      if (!event.defaultPrevented && event.key === "Enter") { event.preventDefault(); openPicker(); }
+    }} />
   </div>;
 }
 export function Modal({ title, children, onClose, locale, t, returnFocus, wide = false }: { title: string; children: ReactNode; onClose: () => void; locale: Locale; t: Translate; returnFocus: HTMLElement | null; wide?: boolean }) {
@@ -52,6 +58,11 @@ export function Modal({ title, children, onClose, locale, t, returnFocus, wide =
     <div className="mk-dialog-header"><Dialog.Title>{title}</Dialog.Title><Dialog.Close className="mk-icon-button" aria-label={t("close")}><X /></Dialog.Close></div>{children}
   </Dialog.Popup></Dialog.Portal></Dialog.Root>;
 }
-export function Filter({ value, onChange, options, label }: { value: string; onChange: (value: string) => void; options: { value: string; label: string }[]; label: string }) {
-  return <select className="mk-control" aria-label={label} value={value} onChange={e => onChange(e.target.value)}>{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select>;
+export function Filter({ value, onChange, options, label, required = false, disabled = false, className = "", dir }: { value: string; onChange: (value: string) => void; options: { value: string; label: string }[]; label: string; required?: boolean; disabled?: boolean; className?: string; dir?: "ltr" | "rtl" }) {
+  const { locale } = useMockup();
+  const direction = dir || (locale === "ar" ? "rtl" : "ltr");
+  return <DirectionProvider direction={direction}><Select.Root modal={false} value={value || null} items={options} required={required} disabled={disabled} onValueChange={next => onChange(next || "")}>
+    <Select.Trigger className={`mk-control mk-select-trigger ${className}`} aria-label={label} dir={direction}><Select.Value placeholder={options.find(o => !o.value)?.label || label} /><Select.Icon><ChevronDown aria-hidden="true" /></Select.Icon></Select.Trigger>
+    <Select.Portal><Select.Positioner className="mk-select-positioner" sideOffset={6} align="start" alignItemWithTrigger={false}><Select.Popup className="mk-scope mk-select-popup" dir={direction} lang={locale}><Select.List className="mk-select-list">{options.filter(o => o.value).map(o => <Select.Item className="mk-select-option" key={o.value} value={o.value}><Select.ItemText>{o.label}</Select.ItemText><Select.ItemIndicator><Check aria-hidden="true" /></Select.ItemIndicator></Select.Item>)}</Select.List></Select.Popup></Select.Positioner></Select.Portal>
+  </Select.Root></DirectionProvider>;
 }

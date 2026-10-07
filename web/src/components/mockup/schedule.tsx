@@ -1,15 +1,15 @@
 "use client";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Clock3, MessageSquareText, ArrowUpLeft, ArrowUpRight, UserRound } from "lucide-react";
+import { CalendarDays, Plus, Clock3, MessageSquareText, ArrowUpLeft, ArrowUpRight, UserRound } from "lucide-react";
 import { useMockup } from "./context";
-import { clinicMinutes, clock, dentists, displayDate, minutes, moveDay } from "./data";
-import { Action, Avatar, Empty, Filter } from "./primitives";
+import { clinicMinutes, clock, dentists, displayDate, minutes } from "./data";
+import { Action, Avatar, Empty, Filter, PickerInput } from "./primitives";
 
 const HOUR_HEIGHT = 88;
 export function Schedule() {
   const { t, locale, date, setDate, today, appointments, patients, requests, settings, dentist, setDentist, now, openModal, navigate } = useMockup();
   if (!date) return <div className="mk-panel mk-loading" aria-busy="true"><CalendarDays /></div>;
   const visibleDentists = dentists.filter(d => dentist === "all" || d.id === dentist);
-  const dayAppointments = appointments.filter(a => a.date === date && a.status !== "cancelled" && (dentist === "all" || a.dentistId === dentist));
+  const dayAppointments = appointments.filter(a => a.date === date && (dentist === "all" || a.dentistId === dentist));
   const todayAppointments = appointments.filter(a => a.date === today && a.status !== "cancelled");
   const start = Math.floor(Math.min(minutes(settings.open), ...dayAppointments.map(a => a.start)) / 60) * 60;
   const end = Math.ceil(Math.max(minutes(settings.close), ...dayAppointments.map(a => a.start + a.duration)) / 60) * 60;
@@ -17,7 +17,7 @@ export function Schedule() {
   const currentMinute = now ? clinicMinutes(now, settings.timezone) : -1;
   const Arrow = locale === "ar" ? ArrowUpLeft : ArrowUpRight;
   return <>
-    <div className="mk-toolbar mk-panel"><div className="mk-date-controls"><label className="mk-date-input"><CalendarDays /><input type="date" aria-label={t("date")} value={date} onChange={e => { if (e.target.value) setDate(e.target.value); }} /></label><div className="mk-day-navigation"><button className="mk-icon-button" aria-label={t("previous")} onClick={() => setDate(moveDay(date, -1))}>{locale === "ar" ? <ChevronRight /> : <ChevronLeft />}</button><Action onClick={() => setDate(today)}>{t("today")}</Action><button className="mk-icon-button" aria-label={t("next")} onClick={() => setDate(moveDay(date, 1))}>{locale === "ar" ? <ChevronLeft /> : <ChevronRight />}</button></div></div>
+    <div className="mk-toolbar mk-panel"><div className="mk-date-controls"><PickerInput wrapperClassName="mk-date-input" type="date" label={t("date")} pickerLabel={t("openPicker")} value={date} onInput={e => { if (e.currentTarget.value) setDate(e.currentTarget.value); }} onChange={e => { if (e.target.value) setDate(e.target.value); }} /><div className="mk-day-navigation"><Action onClick={() => setDate(today)}>{t("today")}</Action></div></div>
       <div className="mk-toolbar-actions"><div className="mk-select-icon"><UserRound /><Filter label={t("dentist")} value={dentist} onChange={setDentist} options={[{ value: "all", label: t("allDentists") }, ...dentists.map(d => ({ value: d.id, label: d.name[locale] }))]} /></div><Action variant="primary" onClick={() => openModal({ kind: "newAppointment" })}><Plus />{t("newAppointment")}</Action></div>
     </div>
     <div className="mk-summary"><div><span className="mk-summary-icon"><CalendarDays /></span><div><span>{t("todayAppointments")}</span><strong>{todayAppointments.length}<small>{todayAppointments.filter(a => a.status === "completed").length} {t("completed")} · {todayAppointments.filter(a => a.status === "arrived").length} {t("arrived")}</small></strong></div></div><div><span className="mk-summary-icon"><MessageSquareText /></span><div><span>{t("pendingRequests")}</span><strong>{requests.filter(r => r.status === "pending").length}</strong></div><button className="mk-text-button" onClick={() => navigate("/mockup/requests")}>{t("reviewRequests")}<Arrow /></button></div></div>
